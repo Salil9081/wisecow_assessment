@@ -21,7 +21,7 @@ jobs:
         with:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push image
         uses: docker/build-push-action@v4
@@ -33,12 +33,10 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/wisecow:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/wisecow:${{ github.sha }}
 
-  deploy:
-    needs: build-and-push
-    runs-on: [ self-hosted, linux, minikube ]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Update k8s deployment image
-        run: |
-          kubectl -n default set image deployment/wisecow wisecow=${{ secrets.DOCKERHUB_USERNAME }}/wisecow:latest --record
-          kubectl -n default rollout status deployment/wisecow
+#  deploy-to-render:
+ #   needs: build-and-push
+ #   runs-on: ubuntu-latest
+  #  steps:
+#      - name: Trigger Render Deploy Hook
+ #       run: |
+   #       curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
